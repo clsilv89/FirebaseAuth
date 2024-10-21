@@ -1,3 +1,4 @@
+import Chat from '@/routes/Chat';
 import LandingPage from '@/routes/LandingPage';
 import Login from '@/routes/Login';
 import Logon from '@/routes/Logon';
@@ -20,6 +21,10 @@ export default function HomeScreen() {
       <Stack.Screen 
         name='Landing'
         component={LandingPage}
+      />
+      <Stack.Screen 
+        name='Chat'
+        component={Chat}
       />
     </Stack.Navigator>
   )

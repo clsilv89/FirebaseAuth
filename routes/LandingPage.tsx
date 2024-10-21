@@ -1,4 +1,4 @@
-import { Button, Text, View } from "react-native"
+import { Button, FlatList, Text, TouchableHighlight, View } from "react-native"
 import { useState, useEffect } from "react"
 import { auth } from "@/components/Firebase"
 import { database } from "@/components/Firebase"
@@ -6,24 +6,63 @@ import { UserFromDatabase } from "@/models/UserFromDatabase.interface"
 
 export default function LandingPage({navigation, route}) {
     const [user, setUser] = useState<UserFromDatabase>()
+    const [contacts, setContacts] = useState<Array<UserFromDatabase>>([])
     const { uid = '' } = route.params
 
-    async function getUser() {
-        database
-            .ref(`usuario/${uid}`)
-            .once('value')
-            .then((snapshot) => {
-                setUser(snapshot.val())
-                console.log(snapshot)
-            })
-    }
+    useEffect(() => {
+        // function getUser() {
+        //     database
+        //         .ref(`usuario/${uid}`)
+        //         .on('child_changed', (snapshot) => {
+        //             snapshot.forEach((child) => {
+        //                 console.log(child)
+        //             })
+        //             setUser(snapshot.val())
+        //             console.log(snapshot)
+        //         })
+        // }
 
-    getUser()
+        function getUsers() {
+            database
+                .ref(`usuario`)
+                .on('value', snapshot => {
+                    const list = Array<UserFromDatabase>()
+                    snapshot.forEach((child) => {
+                        if (child.val().uid !== uid) {
+                            list.push(child.val())
+                        }
+                        console.log(child, list)
+                    })
+                    setContacts(list)
+                })
+        }
+
+        getUsers()
+    }, [uid])
 
     return(
         <View>
             <Text>Usuário Logado!!!</Text>
-            <Text>{user?.name}</Text>
+            <FlatList
+                data={contacts}
+                renderItem={((item) => {
+                    return (
+                        <TouchableHighlight
+                            onPress={() =>
+                                navigation.navigate('Chat',
+                                    {
+                                        senderUid: uid,
+                                        receiverUid: item?.item.uid
+                                    }
+                                )
+                            }>
+                            <View style={{marginVertical: 12}}>
+                                <Text>{item?.item.name}</Text>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                })}
+            />
             <Button 
                 title="Fazer logoff"
                 onPress={() => 
