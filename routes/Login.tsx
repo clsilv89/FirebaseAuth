@@ -1,9 +1,9 @@
-import { Button, StyleSheet, TextInput, View } from 'react-native';
-import { auth } from '@/components/Firebase'
-import { useState, useEffect} from 'react'
+import { auth } from '@/components/Firebase';
 import { User } from '@/models/User.interface';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
 
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
@@ -14,7 +14,7 @@ export default function Login({navigation}) {
             navigation.navigate('Landing', { uid: user?.uid })
         }
     })
-    
+
     async function login() {
         auth
             .signInWithEmailAndPassword(email, password)
@@ -29,23 +29,61 @@ export default function Login({navigation}) {
 
 
     return (
-        <View style={{ margin: 24 }}>
-            <TextInput 
+        <View style={styles.container}>
+            <TextInput
+                style={styles.textInput}
                 placeholder='Email'
                 onChangeText={(text) => setEmail(text)}
             />
-            <TextInput 
+            <TextInput
+                style={styles.textInput}
                 onChangeText={(text) => setPassword(text)}
                 placeholder='Senha'
                 secureTextEntry={true}
             />
-            <Button title='Fazer Login'
-                onPress={() => login()}
-            />
+            <TouchableHighlight style={styles.buttonLogin}
+                onPress={() => login()}>
+                <Text style={styles.textButtonLogin}>Login</Text>
+            </TouchableHighlight>
 
-            <Button title='Não possui usuário? Fazer cadastro'
-                onPress={() => navigation.navigate('Logon')}
-            />
+            <TouchableHighlight
+                onPress={() => navigation.navigate('Logon')}>
+                <Text style={styles.textCreateUser}>Não possui usuário? {"\n"} Fazer cadastro</Text>
+            </TouchableHighlight>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 24,
+        backgroundColor: '#075E54',
+        flex: 1
+    },
+    buttonLogin: {
+        backgroundColor: '#128C7E',
+        borderRadius: 25,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    textButtonLogin: {
+        alignSelf: 'center',
+        textAlign: 'center',
+        color: '#FFFFFF',
+        fontSize: 18
+    },
+    textCreateUser: {
+        alignSelf: 'center',
+        color: '#34B7F1',
+        margin: 16
+    },
+    textInput: {
+        borderColor: '#25D366',
+        borderWidth: 1,
+        height: 50,
+        borderRadius: 8,
+        marginVertical: 12,
+        backgroundColor: '#FFFFFF',
+    }
+})
