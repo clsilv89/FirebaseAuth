@@ -1,3 +1,4 @@
+import HeaderComponent from '@/components/HeaderComponent';
 import Chat from '@/routes/Chat';
 import LandingPage from '@/routes/LandingPage';
 import Login from '@/routes/Login';

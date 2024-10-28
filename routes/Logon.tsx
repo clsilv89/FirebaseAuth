@@ -6,18 +6,19 @@ import { ImagePickerResponse, launchCamera } from 'react-native-image-picker';
 
 export default function Logon({ navigation }) {
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [dtNasc, setDtNasc] = useState('')
+  const [downloadURL, setDownloadURL] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
   const [user, setUser] = useState<User>()
   const [imageSelected, setImageSelected] = useState<ImagePickerResponse>()
 
   useEffect(() => {
     if (user?.uid) {
-      navigation.navigate('Landing', { uid: user?.uid })
       saveUserOnDatabase()
+      navigation.navigate('Landing', { uid: user?.uid })
     }
   })
 
@@ -29,30 +30,35 @@ export default function Logon({ navigation }) {
     try {
       const response = await launchCamera(options)
       setImageSelected(response)
-      await saveImage(response.assets[0].uri)
     } catch (e) {
       console.log(e)
     }
   }
 
   async function saveImage(uri: string) {
-    const ref = storage.ref('usuarios/avatar')
+    const ref = storage.ref(`usuarios/avatar/${user?.uid}`)
     await ref.putFile(uri)
+    const downloadURL = await storage.ref(`usuarios/avatar/${user?.uid}`).getDownloadURL()
+    setDownloadURL(downloadURL)
   }
 
   async function saveUserOnDatabase() {
-    database.ref(`usuario/${user?.uid}`).set({
-      name: name,
-      email: email,
-      birthDate: dtNasc,
-      uid: user?.uid
-    })
-      .then((response) => {
-        console.log(response)
+    await saveImage(imageSelected.assets[0].uri)
+    .then(() => { 
+      database.ref(`usuario/${user?.uid}`).set({
+        name: name,
+        email: email,
+        birthDate: dtNasc,
+        uid: user?.uid,
+        downloadURL: downloadURL
       })
-      .catch((error) => {
-        console.log(error)
-      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })    
   }
 
   async function createUser() {

@@ -1,3 +1,4 @@
+import ChatBubbleComponent from "@/components/ChatBubbleComponent"
 import { database } from "@/components/Firebase"
 import { Message } from "@/models/Message.interface"
 import { UserFromDatabase } from "@/models/UserFromDatabase.interface"
@@ -70,10 +71,12 @@ export default function Chat({navigation, route}) {
                 <FlatList 
                     data={messages}
                     renderItem={((item) => {
+                        const MessageBubble = {
+                            message: item?.item.message,
+                            isReceived: item?.item.senderUid === receiverUid
+                        }
                         return (
-                            <View>
-                                <Text>{item.item.message}</Text>
-                            </View>
+                            <ChatBubbleComponent {...MessageBubble} />
                         )
                     })}
                 />

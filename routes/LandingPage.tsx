@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { auth } from "@/components/Firebase"
 import { database } from "@/components/Firebase"
 import { UserFromDatabase } from "@/models/UserFromDatabase.interface"
+import UserItemListComponent from "@/components/UserItemListComponent"
 
 export default function LandingPage({navigation, route}) {
     const [user, setUser] = useState<UserFromDatabase>()
@@ -56,21 +57,10 @@ export default function LandingPage({navigation, route}) {
                                     }
                                 )
                             }>
-                            <View style={{marginVertical: 12}}>
-                                <Text>{item?.item.name}</Text>
-                            </View>
+                            <UserItemListComponent {...item?.item} />
                         </TouchableHighlight>
                     )
                 })}
-            />
-            <Button 
-                title="Fazer logoff"
-                onPress={() => 
-                    {
-                        navigation.navigate('Login')
-                        auth.signOut() 
-                    }
-                }
             />
         </View>
     )
